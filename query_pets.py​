@@ -1,3 +1,44 @@
+import sqlite3 as lite
+
+def pet_query():
+
+    MyInput = ""
+
+    while MyInput != -1:
+        MyInput = input("Enter a person to look up, -1 to exit:")
+
+        try:
+            MyInput = int(MyInput)
+        except:
+            print("Please enter an integer")
+            continue
+
+        con = lite.connect('pets.db')
+        cur = con.cursor()
+
+        cur.execute(
+        """SELECT person.first_name, person.last_name, person.age, 
+            pets.name, pets.breed, pets.age, pets.dead 
+            
+            FROM person 
+            LEFT JOIN person_pet ON person.id = person_pet.person_id 
+            LEFT JOIN pets ON person_pet.pet_id = pets.id 
+            WHERE person.id = 
+        """ + str(MyInput)
+        )
+
+        mydata = cur.fetchall()
+        
+        try:
+            mydata[0]
+        except IndexError:
+            print("Record Not Found")
+            continue
+
+        for i in mydata:
+            MyDog = ("years old, owned","who was") if i[6] == 1 else ("years old, owns","who is")   
+            print(i[0], i[1] + ", who is", i[2], MyDog[0], i[3] + ", a", i[4], MyDog[1], i[5], "years old in dog years.")
+
 
 if __name__ == "__main__":
-    pass
+    pet_query()
